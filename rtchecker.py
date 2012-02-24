@@ -1,15 +1,21 @@
 #!/usr/bin/python2
 
-#####################
-#	CONFIG PART		#
-#					#
-#####################
-					
-#Enter your XMLProxyAdress here:
-proxyadress = "ADDRESS"
-
-
 import xmlrpclib, sys, os, signal, argparse, shutil
+
+
+#####################
+#   CONFIG PART     #
+#                   #
+#####################
+
+#Enter your XMLProxyAddress here:
+proxyaddress = "ADDRESS"
+
+if proxyaddress == "ADDRESS":
+    print "Edit the file before running"
+    sys.exit(0)
+
+
 
 
 parser = argparse.ArgumentParser(description="Check for files that are on your dribe, but aren't present in rtorrent", add_help=True)
@@ -35,7 +41,7 @@ def find(string, list):
 	
 def refresher():
 	print "refreshing list! (takes some time depending on the number of torrents)"
-	server = xmlrpclib.ServerProxy(proxyadress)	
+	server = xmlrpclib.ServerProxy(proxyaddress)	
 	torrents = server.download_list("")    
 	f = open(filename, "w")
 	for torrent in torrents:
