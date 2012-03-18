@@ -1,23 +1,16 @@
 #!/usr/bin/env python
 
-import os, sys, re, argparse, shutil
+import os, sys, re, argparse, shutil, tkFileDialog, string 
 from bencode import bencode, bdecode
-
-torrentlist = []
-
-parser = argparse.ArgumentParser(description="Check for files that are on your drive, but aren't present in utorrent", add_help=True)
-action = parser.add_mutually_exclusive_group(required=False)
-parser.add_argument('path', action="store", help="Directory you want to check")
-parser.add_argument('path2', action="store", help="Path to your resume.dat ")
-action.add_argument('-d', action="store_true", dest="delete", default=False, help="Delete the files (asks again)")
-action.add_argument('-D', action="store_true", dest="delete_all", default=False, help="Delete the files (Doesn't ask again) USE CAREFULLY!!")
-args = parser.parse_args()
+from Tkinter import *
 
 
+gtorrentlist = []
 
-filename = os.path.join(args.path2, "resume.dat")
-path = args.path
+gdirname ="a "
+gfile="a "
 
+gtorrentlist.append("1")
 
 def find(string, list):
     for item in list:
@@ -25,22 +18,93 @@ def find(string, list):
             return True
     return False
 
-content = open(filename,"rb").read()
-data = bdecode(content)
-for torrent_name,torrent_path in data.iteritems():
-	if torrent_name != ".fileguard":
-		#print("the name is: "+torrent_name)
-		#print("the path is: "+torrent_path["path"])
-		torrentlist.append(torrent_path)
-		
-for dirname in os.listdir(path):
-    thepath = os.path.join(path, dirname)
-    if os.path.isdir(thepath) == True:
-        if find(thepath, torrentlist) == False:
-            print("Found: "+os.path.join(path, dirname))
-            if args.delete:
-                reply = raw_input("Delete directory "+dirname+"? [y/[n]] ")
-                if reply=="y" or reply == "Y":
-                    shutil.rmtree(thepath,True)
-            elif args.delete_all:
-                shutil.rmtree(thepath,True)
+
+root=Tk()
+root.title("utchecker")
+
+#root.geometry("300x400")
+
+
+label=Label(root,text="utchecker", font="bold 16")
+label.grid(row=0,column=0)
+
+dirname_label = StringVar() 
+dirname_label.set("Folder to check: ")
+
+
+def press1():
+	global gtorrentlist
+	global gfilename
+	torrentlist = []
+	file = tkFileDialog.askopenfile(parent=root,mode="rb",title="Please select resume.dat")
+	if file != None:
+		data = file.read()
+		file.close()
+		content = bdecode(data)
+		for torrent_name,torrent_path in content.iteritems():
+			if torrent_name != ".fileguard":
+				torrentlist.append(torrent_path)
+	button2.configure(state=NORMAL)
+	gfile=file
+	gtorrentlist=torrentlist
+
+button = Button(root, text="Select resume.dat", command=press1)
+button.grid(row=1,column=0)
+
+
+def press2():
+	global gdirname
+	dirname = tkFileDialog.askdirectory(parent=root,initialdir="/",title="Please select folder to check")
+	dirname=os.path.normpath(dirname)
+	if dirname != None:
+		dirname_label.set("Folder to check: \n"+dirname) 
+	button3.configure(state=NORMAL)
+	gdirname=dirname
+
+
+	
+button2 = Button(root, text="Select folder to check", command=press2 ,state=DISABLED)
+button2.grid(row=2,column=0)
+
+label2=Label(root, font="10",textvariable=dirname_label)
+label2.grid(row=3,column=0)
+
+
+def press3():
+	text.delete('1.0',END)
+	dirname = gdirname
+	file = gfile
+	torrentlist = gtorrentlist
+	if dirname != "" and file != "" and torrentlist:
+		"""
+		path dir to check
+		path2 resume.dat
+		delete
+		delete_all
+		"""
+		for dirname2 in os.listdir(dirname):
+			thepath = os.path.join(dirname, dirname2)
+			if os.path.isdir(thepath) == True:
+				if find(thepath, torrentlist) == False:
+					text.insert(END,thepath+"\r\n")
+
+button3 = Button(root, text="Check it", command=press3 ,state=DISABLED)
+button3.grid(row=4,column=0)
+
+label2=Label(root,text="Found:", font="12")
+label2.grid(row=5,column=0)
+
+text = Text(root)
+text.grid(row=6,column=0)
+
+root.mainloop()
+
+
+
+
+
+
+
+
+
+
