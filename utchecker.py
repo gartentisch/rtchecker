@@ -7,8 +7,8 @@ from Tkinter import *
 
 gtorrentlist = []
 
-gdirname ="a "
-gfile="a "
+gdirname =" "
+gfile=" "
 
 gtorrentlist.append("1")
 
@@ -22,14 +22,15 @@ def find(string, list):
 root=Tk()
 root.title("utchecker")
 
-#root.geometry("300x400")
-
 
 label=Label(root,text="utchecker", font="bold 16")
 label.grid(row=0,column=0)
 
 dirname_label = StringVar() 
 dirname_label.set("Folder to check: ")
+
+text = Text(root)
+text.grid(row=6,column=0)
 
 
 def press1():
@@ -41,9 +42,11 @@ def press1():
 		data = file.read()
 		file.close()
 		content = bdecode(data)
-		for torrent_name,torrent_path in content.iteritems():
-			if torrent_name != ".fileguard":
-				torrentlist.append(torrent_path)
+		for torrent_name,torrent_data in content.iteritems():
+			if type(torrent_data).__name__=='dict':
+				torrent_path=torrent_data["path"]
+				if torrent_name != ".fileguard":
+					torrentlist.append(torrent_path)
 	button2.configure(state=NORMAL)
 	gfile=file
 	gtorrentlist=torrentlist
@@ -85,7 +88,7 @@ def press3():
 		for dirname2 in os.listdir(dirname):
 			thepath = os.path.join(dirname, dirname2)
 			if os.path.isdir(thepath) == True:
-				if find(thepath, torrentlist) == False:
+				if find(thepath.encode("utf-8"), torrentlist) == False:
 					text.insert(END,thepath+"\r\n")
 
 button3 = Button(root, text="Check it", command=press3 ,state=DISABLED)
@@ -94,17 +97,6 @@ button3.grid(row=4,column=0)
 label2=Label(root,text="Found:", font="12")
 label2.grid(row=5,column=0)
 
-text = Text(root)
-text.grid(row=6,column=0)
+
 
 root.mainloop()
-
-
-
-
-
-
-
-
-
-
