@@ -12,13 +12,6 @@ gfile=" "
 
 gtorrentlist.append("1")
 
-def find(string, list):
-    for item in list:
-        if item == string:
-            return True
-    return False
-
-
 root=Tk()
 root.title("utchecker")
 
@@ -37,10 +30,10 @@ def press1():
 	global gtorrentlist
 	global gfilename
 	torrentlist = []
-	file = tkFileDialog.askopenfile(parent=root,mode="rb",title="Please select resume.dat")
-	if file != None:
-		data = file.read()
-		file.close()
+	sfile = tkFileDialog.askopenfile(parent=root,mode="rb",title="Please select resume.dat")
+	if sfile != None:
+		data = sfile.read()
+		sfile.close()
 		content = bdecode(data)
 		for torrent_name,torrent_data in content.iteritems():
 			if type(torrent_data).__name__=='dict':
@@ -48,7 +41,7 @@ def press1():
 				if torrent_name != ".fileguard":
 					torrentlist.append(torrent_path)
 	button2.configure(state=NORMAL)
-	gfile=file
+	gfile=sfile
 	gtorrentlist=torrentlist
 
 button = Button(root, text="Select resume.dat", command=press1)
@@ -76,19 +69,13 @@ label2.grid(row=3,column=0)
 def press3():
 	text.delete('1.0',END)
 	dirname = gdirname
-	file = gfile
+	sfile = gfile
 	torrentlist = gtorrentlist
 	if dirname != "" and file != "" and torrentlist:
-		"""
-		path dir to check
-		path2 resume.dat
-		delete
-		delete_all
-		"""
 		for dirname2 in os.listdir(dirname):
 			thepath = os.path.join(dirname, dirname2)
 			if os.path.isdir(thepath) == True:
-				if find(thepath.encode("utf-8"), torrentlist) == False:
+				if not thepath.encode("utf-8") in torrentlist:
 					text.insert(END,thepath+"\r\n")
 
 button3 = Button(root, text="Check it", command=press3 ,state=DISABLED)
