@@ -1,0 +1,1 @@
+Two python scripts to check for files, that are present in your seedfolder, but aren't present in you torrentclient (rtorrent or utorrent).
