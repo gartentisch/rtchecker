@@ -22,15 +22,19 @@ label.grid(row=0,column=0)
 dirname_label = StringVar() 
 dirname_label.set("Folder to check: ")
 
-text = Text(root)
-text.grid(row=6,column=0)
+scrollbar = Scrollbar(root)
+scrollbar.grid(row=6,column=1,sticky=N+S)
+t = Text(root,yscrollcommand=scrollbar.set)
+t.grid(row=6,column=0)
+
+scrollbar.config(command=t.yview)
 
 
 def press1():
 	global gtorrentlist
 	global gfilename
 	torrentlist = []
-	sfile = tkFileDialog.askopenfile(parent=root,mode="rb",title="Please select resume.dat")
+	sfile = tkFileDialog.askopenfile(parent=root,mode="rb",title="Please select resume.dat", filetypes=[('', 'resume.dat')])
 	if sfile != None:
 		data = sfile.read()
 		sfile.close()
@@ -67,7 +71,7 @@ label2.grid(row=3,column=0)
 
 
 def press3():
-	text.delete('1.0',END)
+	t.delete('1.0',END)
 	dirname = gdirname
 	sfile = gfile
 	torrentlist = gtorrentlist
@@ -76,7 +80,7 @@ def press3():
 			thepath = os.path.join(dirname, dirname2)
 			if os.path.isdir(thepath) == True:
 				if not thepath.encode("utf-8") in torrentlist:
-					text.insert(END,thepath+"\r\n")
+					t.insert(END,thepath+"\r\n")
 
 button3 = Button(root, text="Check it", command=press3 ,state=DISABLED)
 button3.grid(row=4,column=0)
