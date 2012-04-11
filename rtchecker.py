@@ -40,16 +40,21 @@ def find(string, list):
 	return False	
 	
 def refresher():
-	print "refreshing list! (takes some time depending on the number of torrents)"
-	server = xmlrpclib.ServerProxy(proxyaddress)	
-	torrents = server.download_list("")    
-	f = open(filename, "w")
-	for torrent in torrents:
-		message = server.d.get_directory(torrent)
-		f.write(unicode(message).encode("utf-8")+"\n")
-	f.close()
-	print "refreshed list!"
-
+        print "Refreshing list. This may take some time depending on the number of torrents..."
+        server = xmlrpclib.ServerProxy(proxyaddress)
+        torrents = server.download_list("")
+        numtorr = len(torrents)
+        f = open(filename, "w")
+        counter = 0
+        for torrent in torrents:
+                message = server.d.get_directory(torrent)
+                f.write(unicode(message).encode("utf-8")+"\n")
+                counter = counter + 1
+                sys.stdout.write("\r"+str(counter)+" / "+str(numtorr)+" ("+str(int(round((100.0*counter)/numtorr)))+"%)")
+                sys.stdout.flush()
+        f.close()
+        sys.stdout.write("\n")
+        print "Refreshed list!"
 
 path = args.path
 torrentlist = []
