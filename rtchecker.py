@@ -51,11 +51,11 @@ def refresher():
 	f.close()
 	sys.stdout.write("\n")
 	print "Refreshed list!"
-path = args.path
+path = os.path.realpath(args.path)
 torrentlist = []
 filename = "checker.list"
 
-if args.refresh  or not os.path.exists("checker.list"):
+if args.refresh or not os.path.exists(filename):
 	refresher()
 
 
